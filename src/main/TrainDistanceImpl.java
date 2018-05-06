@@ -17,6 +17,9 @@ public class TrainDistanceImpl implements TrainDistance {
     //起点、终点
     private String startNode;
     private String endNode;
+    private Map<String, Integer> route;
+    private Map<String, Boolean> isInStack;
+    private Stack<String> cacheRoute;
 
 
     @Override
@@ -36,21 +39,21 @@ public class TrainDistanceImpl implements TrainDistance {
     }
 
     @Override
-    public MinStep getRouteByStops(String start, String end, int maxStops) {
+    public Map<String, Integer> getRouteByStops(String start, String end, int maxStops) {
         this.stepLength = initStepLength();
         this.nodeNum = this.stepLength != null ? this.stepLength.size() : 0;
-        //起点、终点不在目标节点内，返回不可达
-        if (this.stepLength == null || (!this.stepLength.containsKey(start)) || (!this.stepLength.containsKey(end))) {
-            return NO_SUCH_ROUTE;
-        }
         initProperty(start, end);
-
-        return null;
+        getRoute(maxStops);
+        return route;
     }
 
     @Override
-    public MinStep getRouteByDistance(String start, String end, int maxDistance) {
-        return null;
+    public Map<String, Integer> getRouteByDistance(String start, String end, int maxDistance) {
+        this.stepLength = initStepLength();
+        this.nodeNum = this.stepLength != null ? this.stepLength.size() : 0;
+        initProperty(start, end);
+        getRouteByDis(maxDistance);
+        return route;
     }
 
     @Override
@@ -111,6 +114,10 @@ public class TrainDistanceImpl implements TrainDistance {
         outNode = new HashSet<>();
         nodeStep = new HashMap<>();
         nextNode = new LinkedList<>();
+        route = new HashMap<>();
+        isInStack = new HashMap<>();
+        cacheRoute = new Stack<>();
+        cacheRoute.push(start);
         nextNode.add(start);
         startNode = start;
         endNode = end;
@@ -153,6 +160,75 @@ public class TrainDistanceImpl implements TrainDistance {
         outNode.add(start);
         //计算下一个节点
         step();
+    }
+
+    private void getRoute(int maxStep) {
+        String start = cacheRoute.peek();
+        boolean isBreak = false;
+        int step = 0;
+        if (nodeStep.containsKey(start)) {
+            step = nodeStep.get(start).getNodeStep();
+        }
+        if (cacheRoute.isEmpty()) {
+            return;
+        }
+        HashMap<String, Integer> nextStep = stepLength.get(start);
+        Iterator<Map.Entry<String, Integer>> iterator = nextStep.entrySet().iterator();
+        while (iterator.hasNext()) {
+            Map.Entry<String, Integer> entry = iterator.next();
+            String key = entry.getKey();
+            Integer value = entry.getValue() + step;
+            if (cacheRoute.size() > maxStep) {
+                cacheRoute.pop();
+                isBreak = true;
+                break;
+            }
+            if (endNode.equals(key)) {
+                cacheRoute.push(key);
+                String currentRoute = cacheRoute.toString();
+                route.put(currentRoute, value);
+            } else {
+                cacheRoute.push(key);
+            }
+            nodeStep.put(key, new PreNode(start, value));
+            getRoute(maxStep);
+        }
+        if (!iterator.hasNext() && cacheRoute.size() > 1 && !isBreak) {
+            cacheRoute.pop();
+        }
+    }
+
+    private void getRouteByDis(int maxDistance) {
+        String start = cacheRoute.peek();
+        int step = 0;
+        boolean isBreak = false;
+        if (nodeStep.containsKey(start)) {
+            step = nodeStep.get(start).getNodeStep();
+        }
+        HashMap<String, Integer> nextStep = stepLength.get(start);
+        Iterator<Map.Entry<String, Integer>> iterator = nextStep.entrySet().iterator();
+        while (iterator.hasNext()) {
+            Map.Entry<String, Integer> entry = iterator.next();
+            String key = entry.getKey();
+            Integer value = entry.getValue() + step;
+            if (value >= maxDistance) {
+                cacheRoute.pop();
+                isBreak = true;
+                break;
+            }
+            if (endNode.equals(key)) {
+                cacheRoute.push(key);
+                String currentRoute = cacheRoute.toString();
+                route.put(currentRoute, value);
+            } else {
+                cacheRoute.push(key);
+            }
+            nodeStep.put(key, new PreNode(start, value));
+            getRouteByDis(maxDistance);
+        }
+        if (!iterator.hasNext() && cacheRoute.size() > 1 && !isBreak) {
+            cacheRoute.pop();
+        }
     }
 
 

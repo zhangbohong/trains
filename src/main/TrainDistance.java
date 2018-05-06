@@ -1,6 +1,6 @@
 package main;
 
-import java.util.List;
+import java.util.Map;
 
 public interface TrainDistance {
 
@@ -10,9 +10,9 @@ public interface TrainDistance {
 
     MinStep getMinStep(String start, String end);
 
-    MinStep getRouteByStops(String start, String end, int maxStops);
+    Map<String, Integer> getRouteByStops(String start, String end, int maxStops);
 
-    MinStep getRouteByDistance(String start, String end, int maxDistance);
+    Map<String, Integer> getRouteByDistance(String start, String end, int maxDistance);
 
 
 }

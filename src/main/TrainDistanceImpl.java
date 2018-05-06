@@ -17,10 +17,6 @@ public class TrainDistanceImpl implements TrainDistance {
     //起点、终点
     private String startNode;
     private String endNode;
-    private Map<String, Integer> route;
-    private List<String> cacheRoute;
-    int stop = 1;
-    int distance = 0;
 
 
     @Override
@@ -115,10 +111,7 @@ public class TrainDistanceImpl implements TrainDistance {
         outNode = new HashSet<>();
         nodeStep = new HashMap<>();
         nextNode = new LinkedList<>();
-        route = new HashMap<>();
-        cacheRoute = new LinkedList<>();
         nextNode.add(start);
-        cacheRoute.add(start);
         startNode = start;
         endNode = end;
     }
@@ -145,18 +138,6 @@ public class TrainDistanceImpl implements TrainDistance {
             String key = entry.getKey();
             //起点到可达节点的距离
             Integer value = entry.getValue() + step;
-            for (int i = 0; i < cacheRoute.size(); i++) {
-                String currentRoute = cacheRoute.get(i);
-                if (currentRoute.endsWith(start)) {
-                    currentRoute += key;
-                    if (!key.equals(endNode)) {
-                        cacheRoute.add(currentRoute);
-                    } else {
-                        route.put(currentRoute, value);
-                        System.out.println(currentRoute);
-                    }
-                }
-            }
             if ((!nextNode.contains(key)) && (!outNode.contains(key)) && (!startNode.equals(key))) {
                 nextNode.add(key);
             }

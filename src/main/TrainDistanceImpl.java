@@ -18,7 +18,6 @@ public class TrainDistanceImpl implements TrainDistance {
     private String startNode;
     private String endNode;
     private Map<String, Integer> route;
-    private Map<String, Boolean> isInStack;
     private Stack<String> cacheRoute;
 
 
@@ -115,7 +114,6 @@ public class TrainDistanceImpl implements TrainDistance {
         nodeStep = new HashMap<>();
         nextNode = new LinkedList<>();
         route = new HashMap<>();
-        isInStack = new HashMap<>();
         cacheRoute = new Stack<>();
         cacheRoute.push(start);
         nextNode.add(start);

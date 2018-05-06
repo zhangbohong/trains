@@ -40,7 +40,6 @@ public class TrainDistanceImpl implements TrainDistance {
     @Override
     public Map<String, Integer> getRouteByStops(String start, String end, int maxStops) {
         this.stepLength = initStepLength();
-        this.nodeNum = this.stepLength != null ? this.stepLength.size() : 0;
         initProperty(start, end);
         getRoute(maxStops);
         return route;
@@ -49,7 +48,6 @@ public class TrainDistanceImpl implements TrainDistance {
     @Override
     public Map<String, Integer> getRouteByDistance(String start, String end, int maxDistance) {
         this.stepLength = initStepLength();
-        this.nodeNum = this.stepLength != null ? this.stepLength.size() : 0;
         initProperty(start, end);
         getRouteByDis(maxDistance);
         return route;
